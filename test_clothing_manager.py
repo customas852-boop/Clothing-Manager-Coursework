@@ -7,7 +7,7 @@ import unittest
 import os
 import json
 from datetime import datetime
-from clothing_manager_complete import (
+from clothing_manager import (
     Location, ClothingItem, Shoes, Clothing, Accessories, 
     Outfit, Wardrobe, ClothingItemFactory
 )
