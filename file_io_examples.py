@@ -3,7 +3,7 @@ File I/O Practical Examples
 Demonstrates how to use the file I/O functionality in real-world scenarios
 """
 
-from clothing_manager_complete import Wardrobe
+from clothing_manager import Wardrobe
 from file_manager import FileManager
 
 
