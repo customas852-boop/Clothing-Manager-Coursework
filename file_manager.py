@@ -43,9 +43,6 @@ class FileManager:
         """
         try:
             items = wardrobe.list_items()
-            if not items:
-                print("No items to export!")
-                return False
             
             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = ['ID', 'Type', 'Name', 'Color', 'Size', 'Location', 'Date Added', 'Specific Type']
@@ -73,7 +70,10 @@ class FileManager:
                         'Specific Type': specific_type
                     })
             
-            print(f"✓ Exported {len(items)} items to {filename}")
+            if items:
+                print(f"✓ Exported {len(items)} items to {filename}")
+            else:
+                print(f"✓ Created empty items CSV file: {filename}")
             return True
         
         except Exception as e:
@@ -97,9 +97,6 @@ class FileManager:
         """
         try:
             outfits = wardrobe.list_outfits()
-            if not outfits:
-                print("No outfits to export!")
-                return False
             
             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = ['ID', 'Name', 'Description', 'Status', 'Item Count', 'Items', 'Color Scheme', 'Created']
@@ -123,7 +120,10 @@ class FileManager:
                         'Created': outfit.created_at
                     })
             
-            print(f"✓ Exported {len(outfits)} outfits to {filename}")
+            if outfits:
+                print(f"✓ Exported {len(outfits)} outfits to {filename}")
+            else:
+                print(f"✓ Created empty outfits CSV file: {filename}")
             return True
         
         except Exception as e:
@@ -147,9 +147,6 @@ class FileManager:
         """
         try:
             locations = wardrobe.list_locations()
-            if not locations:
-                print("No locations to export!")
-                return False
             
             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = ['ID', 'Name', 'Description', 'Item Count']
@@ -167,7 +164,10 @@ class FileManager:
                         'Item Count': len(items_in_location)
                     })
             
-            print(f"✓ Exported {len(locations)} locations to {filename}")
+            if locations:
+                print(f"✓ Exported {len(locations)} locations to {filename}")
+            else:
+                print(f"✓ Created empty locations CSV file: {filename}")
             return True
         
         except Exception as e:
@@ -396,9 +396,6 @@ class FileManager:
         """
         try:
             outfits = wardrobe.list_outfits()
-            if not outfits:
-                print("No outfits to report on!")
-                return False
             
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write("="*70 + "\n")
@@ -406,48 +403,54 @@ class FileManager:
                 f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
                 f.write("="*70 + "\n\n")
                 
-                for i, outfit in enumerate(outfits, 1):
-                    f.write(f"OUTFIT {i}: {outfit.name}\n")
-                    f.write("-" * 70 + "\n")
-                    f.write(f"ID: {outfit.outfit_id}\n")
-                    f.write(f"Description: {outfit.description if outfit.description else 'N/A'}\n")
-                    f.write(f"Status: {'✓ Complete' if outfit.is_complete() else '✗ Incomplete'}\n")
-                    f.write(f"Created: {outfit.created_at}\n")
-                    
-                    items = outfit.get_items()
-                    f.write(f"\nItems ({len(items)}):\n")
-                    
-                    # Group by type
-                    by_type = {}
-                    for item in items:
-                        item_type = item.get_type()
-                        if item_type not in by_type:
-                            by_type[item_type] = []
-                        by_type[item_type].append(item)
-                    
-                    for item_type in ["Shoes", "Clothing", "Accessories"]:
-                        if item_type in by_type:
-                            f.write(f"\n  {item_type}:\n")
-                            for item in by_type[item_type]:
-                                f.write(f"    • {item.name}\n")
-                                f.write(f"      Color: {item.color}, Size: {item.size}\n")
-                                if item.location:
-                                    f.write(f"      Location: {item.location.name}\n")
-                    
-                    # Requirements check
-                    f.write(f"\nRequirements Check:\n")
-                    requirements = outfit.has_required_items()
-                    f.write(f"  Has Shoes: {'✓' if requirements['has_shoes'] else '✗'}\n")
-                    f.write(f"  Has Clothing: {'✓' if requirements['has_clothing'] else '✗'}\n")
-                    f.write(f"  Has Accessories: {'✓' if requirements['has_accessories'] else '✗'}\n")
-                    
-                    # Color scheme
-                    colors = outfit.get_color_scheme()
-                    f.write(f"\nColor Scheme: {', '.join(colors) if colors else 'N/A'}\n")
-                    
-                    f.write("\n" + "="*70 + "\n\n")
+                if outfits:
+                    for i, outfit in enumerate(outfits, 1):
+                        f.write(f"OUTFIT {i}: {outfit.name}\n")
+                        f.write("-" * 70 + "\n")
+                        f.write(f"ID: {outfit.outfit_id}\n")
+                        f.write(f"Description: {outfit.description if outfit.description else 'N/A'}\n")
+                        f.write(f"Status: {'✓ Complete' if outfit.is_complete() else '✗ Incomplete'}\n")
+                        f.write(f"Created: {outfit.created_at}\n")
+                        
+                        items = outfit.get_items()
+                        f.write(f"\nItems ({len(items)}):\n")
+                        
+                        # Group by type
+                        by_type = {}
+                        for item in items:
+                            item_type = item.get_type()
+                            if item_type not in by_type:
+                                by_type[item_type] = []
+                            by_type[item_type].append(item)
+                        
+                        for item_type in ["Shoes", "Clothing", "Accessories"]:
+                            if item_type in by_type:
+                                f.write(f"\n  {item_type}:\n")
+                                for item in by_type[item_type]:
+                                    f.write(f"    • {item.name}\n")
+                                    f.write(f"      Color: {item.color}, Size: {item.size}\n")
+                                    if item.location:
+                                        f.write(f"      Location: {item.location.name}\n")
+                        
+                        # Requirements check
+                        f.write(f"\nRequirements Check:\n")
+                        requirements = outfit.has_required_items()
+                        f.write(f"  Has Shoes: {'✓' if requirements['has_shoes'] else '✗'}\n")
+                        f.write(f"  Has Clothing: {'✓' if requirements['has_clothing'] else '✗'}\n")
+                        f.write(f"  Has Accessories: {'✓' if requirements['has_accessories'] else '✗'}\n")
+                        
+                        # Color scheme
+                        colors = outfit.get_color_scheme()
+                        f.write(f"\nColor Scheme: {', '.join(colors) if colors else 'N/A'}\n")
+                        
+                        f.write("\n" + "="*70 + "\n\n")
+                else:
+                    f.write("No outfits defined.\n\n")
             
-            print(f"✓ Outfit details report generated: {filename}")
+            if outfits:
+                print(f"✓ Outfit details report generated: {filename}")
+            else:
+                print(f"✓ Created empty outfit details report: {filename}")
             return True
         
         except Exception as e:
@@ -492,7 +495,7 @@ class FileManager:
                 print(f"\n✓ All data exported to '{folder}' folder!")
                 return True
             else:
-                print(f"\n⚠ Some exports may have failed. Check messages above.")
+                print(f"\n✗ Some exports failed. Check error messages above.")
                 return False
         
         except Exception as e:
