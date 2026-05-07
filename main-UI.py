@@ -3,7 +3,7 @@ CLI Interface with File I/O Operations
 Supports importing/exporting data in multiple formats (CSV, TXT, JSON)
 """
 
-from clothing_manager_complete import Wardrobe
+from clothing_manager import Wardrobe
 from file_manager import FileManager
 
 
